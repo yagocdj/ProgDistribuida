@@ -28,7 +28,7 @@ public class NFSServer {
 						// input (client to server)
 						DataInputStream dis = new DataInputStream(socket.getInputStream());
 						
-						String clientMessage = dis.readUTF();
+						String clientMessage = dis.readUTF().toLowerCase();
 
 						// split command into ["command", parameters...]
 						String[] splitClientMessage = clientMessage.split(" ");
@@ -54,6 +54,9 @@ public class NFSServer {
 						case FileCommand.REMOVE:
 							dos.writeUTF("File to be removed: " + splitClientMessage[1]);
 							nfs.remove(splitClientMessage[1]);
+							break;
+						case FileCommand.STOP_CLIENT:
+							dos.writeUTF(FileCommand.STOP_CLIENT.label);
 							break;
 						// unknown command
 						default:

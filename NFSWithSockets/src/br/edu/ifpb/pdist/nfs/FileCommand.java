@@ -7,7 +7,8 @@ public enum FileCommand {
 	READDIR("readdir"),
 	RENAME("rename"),
 	CREATE("create"),
-	REMOVE("remove");
+	REMOVE("remove"),
+	STOP_CLIENT("x");
 	
 	public final String label;
 	
