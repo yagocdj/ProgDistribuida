@@ -16,12 +16,15 @@ public class NFSServiceImp implements NFSService {
 	}
 
 	@Override
-	public String readdir(String path) throws IOException {
+	public String readdir(String path) {
 		try (Stream<Path> stream = Files.list(Paths.get(NFS_HOME + path))) {
 			return stream
 					.map(Path::getFileName)
 					.map(Path::toString)
 					.collect(Collectors.toSet()).toString();
+		} catch (IOException ioex) {
+			ioex.printStackTrace();
+			return "Error reading dir: " + ioex.getMessage();
 		}
 	}
 
@@ -39,8 +42,12 @@ public class NFSServiceImp implements NFSService {
 	}
 
 	@Override
-	public void create(String path) throws IOException {
-		Files.createFile(Paths.get(NFS_HOME + path));
+	public void create(String path) {
+		try {
+			Files.createFile(Paths.get(NFS_HOME + path));
+		} catch (IOException ioex) {
+			ioex.printStackTrace();
+		}
 	}
 
 	@Override

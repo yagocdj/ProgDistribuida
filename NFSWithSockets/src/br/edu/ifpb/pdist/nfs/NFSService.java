@@ -1,14 +1,12 @@
 package br.edu.ifpb.pdist.nfs;
 
-import java.io.IOException;
-
 public interface NFSService {
 
-	String readdir(String dir) throws IOException;
+	String readdir(String path);
 
 	void rename(String currentName, String newName);
 
-	void create(String path) throws IOException;
+	void create(String path);
 
-	void remove(String fileName);
+	void remove(String path);
 }
