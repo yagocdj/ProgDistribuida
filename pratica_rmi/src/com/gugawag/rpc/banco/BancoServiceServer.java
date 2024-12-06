@@ -27,13 +27,13 @@ public class BancoServiceServer extends UnicastRemoteObject implements BancoServ
     }
 
     @Override
-    public void adicionarConta(String numero){
+    public void adicionarConta(String numero) {
         Conta conta = new Conta(numero);
         contas.add(conta);
     }
 
     @Override
-    public Conta pesquisarConta(String numero){
+    public Conta pesquisarConta(String numero) {
         for(Conta conta : this.contas) {
             if (conta.getNumero().equals(numero)) return conta;
         }
@@ -41,14 +41,7 @@ public class BancoServiceServer extends UnicastRemoteObject implements BancoServ
     }
 
     @Override
-    public Conta removerConta(String numero){
-        Conta contaDeletada = null;
-        for(Conta conta : contas){
-            if (conta.getNumero().equals(numero))
-                contaDeletada = conta;
-                break;
-        }
-        return contaDeletada;
+    public boolean removerConta(String numero) {
+        return contas.removeIf(conta -> conta.getNumero().equals(numero));
     }
-
 }
