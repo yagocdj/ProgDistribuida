@@ -24,6 +24,8 @@ public class MensagemInserirServlet extends HttpServlet {
 		long id = Integer.parseInt(request.getParameter("id"));
 		String mensagem = request.getParameter("mensagem");
 		mensagemService.inserir(id, mensagem);
+		
+		
 	}
 
 }
