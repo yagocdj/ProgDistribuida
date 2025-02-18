@@ -7,13 +7,10 @@ import com.rabbitmq.client.DeliverCallback;
 
 import java.nio.charset.StandardCharsets;
 
-/**
- * This class represents a worker that consumes messages from a queue
- */
-public class Worker {
-
-    private final static String TASK_QUEUE_NAME = "task_queue";
+public class FirstAndLastConsumer {
     private final static String FIRST_LAST_QUEUE_NAME = "first-last";
+
+    private static long firstMessageTimestamp;
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -24,34 +21,28 @@ public class Worker {
         final Connection connection = connectionFactory.newConnection();
         final Channel channel = connection.createChannel();
 
-        boolean durable = true;
-        channel.queueDeclare(TASK_QUEUE_NAME, durable, false, false, null);
-        System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         // queue with only first and last messages
         channel.queueDeclare(FIRST_LAST_QUEUE_NAME, false, false, false, null);
 
-        // int prefetchCount = 1;
-        // channel.basicQos(prefetchCount); // accept only one unack-ed message at a time (see below)
+        System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-            // System.out.println(" [x] Received '" + message + "'");
 
-            long receivedTimestamp = Long.parseLong(message.split("-")[1].trim());
-            int index = Integer.parseInt(message.split("-")[0].trim());
-
-            System.out.println(index + " - " + (System.currentTimeMillis() - receivedTimestamp));
-
-            // put only first and last messages in a new queue
-            if (index == 0 || index == 999_999) {
-                channel.basicPublish("", FIRST_LAST_QUEUE_NAME, null, message.getBytes(StandardCharsets.UTF_8));
+            if (message.split("-")[0].equals("0")) {
+                firstMessageTimestamp = Long.parseLong(message.split("-")[1].trim());
+                System.out.println(firstMessageTimestamp);
+            } else if (message.split("-")[0].equals("999999")) {
+                System.out.println(firstMessageTimestamp);
+                System.out.println(Long.parseLong(message.split("-")[1].trim()) - firstMessageTimestamp);
             }
+            // System.out.println(" [x] Received '" + message + "'");
             // System.out.println(" [x] Done");
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
         };
         boolean autoAck = false;
-        channel.basicConsume(TASK_QUEUE_NAME, autoAck, deliverCallback, consumerTag -> { });
+        channel.basicConsume(FIRST_LAST_QUEUE_NAME, autoAck, deliverCallback, consumerTag -> { });
     }
 
 }
